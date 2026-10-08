@@ -1,0 +1,14 @@
+relationship 0f904daa-95ce-477f-a225-a27df66ff731
+	joinOnDateBehavior: datePartOnly
+	fromColumn: BaseVendas.'Data do Pedido'
+	toColumn: LocalDateTable_253be856-d35d-4843-9db8-4c42b3aa401c.Date
+
+relationship 02acb4a2-018a-4e3a-82ef-276b2b5825a4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: BaseVendas.'Data de Envio'
+	toColumn: LocalDateTable_9c14668e-0a8e-4579-bee0-9a2da835d467.Date
+
+relationship 'BaseVendas_Data do Pedido_Calendário_Date'
+	fromColumn: BaseVendas.'Data do Pedido'
+	toColumn: Calendário.Date
+

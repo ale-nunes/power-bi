@@ -1,0 +1,23 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["BaseVendas"]
+
+annotation PBI_ProTooling = ["DevMode","MCP-PBIModeling"]
+
+ref table BaseVendas
+ref table DateTableTemplate_7f94b939-8b6b-461c-9503-50958805a248
+ref table LocalDateTable_253be856-d35d-4843-9db8-4c42b3aa401c
+ref table LocalDateTable_9c14668e-0a8e-4579-bee0-9a2da835d467
+ref table Calendário
+
+ref cultureInfo pt-BR
+

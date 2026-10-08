@@ -1,0 +1,333 @@
+table BaseVendas
+	lineageTag: 004fa2fe-bf43-45c1-b7e1-4654d1cfdd4d
+
+	measure Vendas = SUM(BaseVendas[Valor da venda])
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: 2265f10d-273b-4dc3-a87e-ee4aad371efe
+
+	measure 'Lucro Total' = SUM(BaseVendas[Lucro])
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: dc85a708-ce6f-4030-ba2d-a5d155e08e4d
+
+	measure 'Quantidade Vendida' = SUM(BaseVendas[Quantidade])
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: 9236053f-f61c-4659-b0a7-554f65a2b12a
+
+	measure Pedidos = DISTINCTCOUNT(BaseVendas[Código Nota Fiscal])
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: 08f456a2-e0cf-4bfb-82e3-338dc2d43842
+
+	measure Clientes = DISTINCTCOUNT(BaseVendas[Customer Name])
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: 3f432f2d-3aaa-40a9-a9f7-4be147300ca5
+
+	measure 'Margem %' = DIVIDE([Lucro Total], [Vendas])
+		formatString: 0.0%
+		displayFolder: 1. Base
+		lineageTag: d34bb40d-9bcc-4fb5-844f-bcdeb5da9c00
+
+	measure 'Ticket Médio' = DIVIDE([Vendas], [Pedidos])
+		formatString: #,0.00
+		displayFolder: 1. Base
+		lineageTag: a1265626-6cb5-457e-a67f-6386e751e010
+
+	measure 'Itens por Pedido' = DIVIDE([Quantidade Vendida], [Pedidos])
+		formatString: 0.0
+		displayFolder: 1. Base
+		lineageTag: 9413378f-f8c9-49e4-8590-fd9222bf4809
+
+	measure 'Preço Médio Unitário' = DIVIDE([Vendas], [Quantidade Vendida])
+		formatString: #,0.00
+		displayFolder: 1. Base
+		lineageTag: 95755666-3201-4252-aef9-fd3a772a0b9f
+
+	measure 'Vendas YTD' = TOTALYTD([Vendas], 'Calendário'[Date])
+		formatString: #,0
+		displayFolder: 2. Tempo
+		lineageTag: ab30c6b9-906a-41f9-9991-f3e5e6ad2ed0
+
+	measure 'Vendas Ano Anterior' = CALCULATE([Vendas], SAMEPERIODLASTYEAR('Calendário'[Date]))
+		formatString: #,0
+		displayFolder: 2. Tempo
+		lineageTag: 7144af0c-632a-486a-9fdf-271a66b183d7
+
+	measure 'Crescimento YoY %' = DIVIDE([Vendas] - [Vendas Ano Anterior], [Vendas Ano Anterior])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2. Tempo
+		lineageTag: 28cbd078-dd33-4a11-b8fd-13bf4f1982df
+
+	measure 'Média Móvel 3M' = DIVIDE(CALCULATE([Vendas], DATESINPERIOD('Calendário'[Date], MAX('Calendário'[Date]), -3, MONTH)), 3)
+		formatString: #,0
+		displayFolder: 2. Tempo
+		lineageTag: c397cb0e-fd60-4faa-885e-f6618c6b8570
+
+	measure 'Desconto Médio %' = AVERAGE(BaseVendas[Desconto %])
+		formatString: 0.0%
+		displayFolder: 3. Desconto e Rentabilidade
+		lineageTag: 5d6c16cf-52af-4f1d-9489-560551f9bc13
+
+	measure 'Lucro com Desconto > 20%' = CALCULATE([Lucro Total], BaseVendas[Desconto %] > 0.2)
+		formatString: #,0;-#,0;0
+		displayFolder: 3. Desconto e Rentabilidade
+		lineageTag: 3356a6be-3c50-4d7b-817f-78efa956a7fa
+
+	measure 'Linhas com Prejuízo' = CALCULATE(COUNTROWS(BaseVendas), BaseVendas[Lucro] < 0)
+		formatString: #,0
+		displayFolder: 3. Desconto e Rentabilidade
+		lineageTag: 3cb6da32-2917-45f9-ba9c-95297092e055
+
+	measure '% Linhas com Prejuízo' = DIVIDE([Linhas com Prejuízo], COUNTROWS(BaseVendas))
+		formatString: 0.0%
+		displayFolder: 3. Desconto e Rentabilidade
+		lineageTag: c9157ee3-e061-4864-b0a9-94532a02e93b
+
+	measure 'Prejuízo Total' = CALCULATE([Lucro Total], BaseVendas[Lucro] < 0)
+		formatString: #,0;-#,0;0
+		displayFolder: 3. Desconto e Rentabilidade
+		lineageTag: 767dd575-85f7-46db-a996-dc8576d00650
+
+	measure 'Dias Médios para Envio' = AVERAGEX(BaseVendas, DATEDIFF(BaseVendas[Data do Pedido], BaseVendas[Data de Envio], DAY))
+		formatString: 0.0
+		displayFolder: 4. Logística
+		lineageTag: 5184d1c9-c78e-4ff0-bd97-d1b4c46726a1
+
+	measure '% Envio Tardio' = DIVIDE(CALCULATE(COUNTROWS(BaseVendas), BaseVendas[Status do Envio] = "Envio tardio"), COUNTROWS(BaseVendas))
+		formatString: 0.0%
+		displayFolder: 4. Logística
+		lineageTag: f43ab3fc-cfa3-4cb6-b210-1fd612a796b1
+
+	measure '% do Total' = DIVIDE([Vendas], CALCULATE([Vendas], ALL(BaseVendas)))
+		formatString: 0.0%
+		displayFolder: 5. Participação e Clientes
+		lineageTag: 6a982944-980d-4422-8b33-61062a630014
+
+	measure 'Ranking Produto' = RANKX(ALL(BaseVendas[Nome do Produto]), [Vendas])
+		formatString: 0
+		displayFolder: 5. Participação e Clientes
+		lineageTag: 14915e50-ba95-4362-b4fd-48ead513d125
+
+	measure 'Ranking Cliente' = RANKX(ALL(BaseVendas[Customer Name]), [Lucro Total])
+		formatString: 0
+		displayFolder: 5. Participação e Clientes
+		lineageTag: 4fd0311d-66ea-4536-9d12-64b85fca16a7
+
+	measure 'Clientes Recorrentes' = COUNTROWS(FILTER(VALUES(BaseVendas[Customer Name]), [Pedidos] > 1))
+		formatString: #,0
+		displayFolder: 5. Participação e Clientes
+		lineageTag: a4fe4cd1-6734-4d89-aa4f-4f34f0dbf3c3
+
+	measure '% Clientes Recorrentes' = DIVIDE([Clientes Recorrentes], [Clientes])
+		formatString: 0.0%
+		displayFolder: 5. Participação e Clientes
+		lineageTag: 11470e34-dd7a-4f21-95b8-65f6c4ef6a15
+
+	/// Formatação condicional: vermelho para lucro negativo, cinza para o restante.
+	measure 'Cor Lucro' = IF([Lucro Total] < 0, "#D6361F", "#C9C5BC")
+		displayFolder: 6. Formatação
+		lineageTag: 15f15171-780f-4853-8c2d-01f5eceb0fc2
+
+	/// Formatação condicional: azul para o último ano com vendas, cinza para os demais.
+	measure 'Cor Ano Destaque' =
+			VAR UltimoAno = CALCULATE(MAX('Calendário'[Ano]), ALL('Calendário'))
+			RETURN IF(MAX('Calendário'[Ano]) = UltimoAno, "#1F5EFF", "#C9C5BC")
+		displayFolder: 6. Formatação
+		lineageTag: 8fd8c72a-e723-47b0-8c96-42cf6bb3c537
+
+	column Categoria
+		dataType: string
+		lineageTag: 02556687-0241-4c72-881c-2298ae61d22e
+		summarizeBy: none
+		sourceColumn: Categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cidade
+		dataType: string
+		lineageTag: 1b69633a-67ab-4caf-bcbb-56ba9fe3efbd
+		summarizeBy: none
+		sourceColumn: Cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pais
+		dataType: string
+		lineageTag: 2ea681a0-3733-4a82-9b4f-3b721a5e8e0b
+		summarizeBy: none
+		sourceColumn: Pais
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: 4e50c1a8-0242-4463-ad41-ac15ae24f7f4
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data do Pedido'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: caf5ee4a-732a-4490-897a-1a94e1776177
+		summarizeBy: none
+		sourceColumn: Data do Pedido
+
+		variation Variation
+			isDefault
+			relationship: 0f904daa-95ce-477f-a225-a27df66ff731
+			defaultHierarchy: LocalDateTable_253be856-d35d-4843-9db8-4c42b3aa401c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Código Nota Fiscal'
+		dataType: string
+		lineageTag: e00a9d9c-9526-456a-a9ae-fe3e6241f156
+		summarizeBy: none
+		sourceColumn: Código Nota Fiscal
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Código Postal'
+		dataType: int64
+		formatString: 0
+		lineageTag: 2da13f6c-82c6-4038-b365-7bb4eb8a1be7
+		summarizeBy: sum
+		sourceColumn: Código Postal
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome do Produto'
+		dataType: string
+		lineageTag: 4f246f06-6dbd-47b1-bc83-4a69f4af2fec
+		summarizeBy: none
+		sourceColumn: Nome do Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Região
+		dataType: string
+		lineageTag: da9ff81d-3eda-4981-9cce-1bb96e075184
+		summarizeBy: none
+		sourceColumn: Região
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: f6df0229-14a0-4aca-96c4-feb8eb4d9aa4
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data de Envio'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 22d8b45c-25f8-422d-8861-f75388411437
+		summarizeBy: none
+		sourceColumn: Data de Envio
+
+		variation Variation
+			isDefault
+			relationship: 02acb4a2-018a-4e3a-82ef-276b2b5825a4
+			defaultHierarchy: LocalDateTable_9c14668e-0a8e-4579-bee0-9a2da835d467.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Tipo de Envio'
+		dataType: string
+		lineageTag: ceb8261f-81e5-4fcd-b7ce-51c45b318858
+		summarizeBy: none
+		sourceColumn: Tipo de Envio
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status do Envio'
+		dataType: string
+		lineageTag: b2df5f98-1dfc-4974-98d1-bcd5921408a5
+		summarizeBy: none
+		sourceColumn: Status do Envio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: c6172548-a940-4011-9992-059fd3b07b0d
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subcategoria
+		dataType: string
+		lineageTag: 9ef2c9e1-0716-447c-8667-4e5de418d378
+		summarizeBy: none
+		sourceColumn: Subcategoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Desconto %'
+		dataType: double
+		lineageTag: 7e848d4e-8218-4949-b8f2-6cd1910292f3
+		summarizeBy: sum
+		sourceColumn: Desconto %
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Lucro
+		dataType: int64
+		formatString: 0
+		lineageTag: 19dd4baf-e23c-4467-89fa-4ce0c2705571
+		summarizeBy: sum
+		sourceColumn: Lucro
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantidade
+		dataType: int64
+		formatString: 0
+		lineageTag: f19943b4-5426-4e88-9566-aaf7dab7c911
+		summarizeBy: sum
+		sourceColumn: Quantidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Valor da venda'
+		dataType: int64
+		formatString: 0
+		lineageTag: 64ecbabd-a09f-4a60-85d2-61d94be1a408
+		summarizeBy: sum
+		sourceColumn: Valor da venda
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Faixa de desconto aplicada à linha, usada no gráfico de lucro por desconto.
+	column 'Faixa de Desconto' = SWITCH(TRUE(), BaseVendas[Desconto %] = 0, "1. Sem desconto", BaseVendas[Desconto %] <= 0.2, "2. Até 20%", BaseVendas[Desconto %] <= 0.4, "3. 20% a 40%", "4. Acima de 40%")
+		dataType: string
+		displayFolder: Apoio
+		lineageTag: fa00b8d4-4860-4af6-b33d-5daa8748eb81
+		summarizeBy: none
+
+	partition BaseVendas = m
+		mode: import
+		source =
+				let
+				  Origem = Csv.Document(File.Contents("C:\Users\Alê\Downloads\BaseVendas.csv"), [Delimiter = ";", Columns = 19, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Cabeçalhos promovidos" = Table.PromoteHeaders(Origem, [PromoteAllScalars = true]),
+				  #"Tipo de coluna alterado" = Table.TransformColumnTypes(#"Cabeçalhos promovidos", {{"Categoria", type text}, {"Cidade", type text}, {"Pais", type text}, {"Customer Name", type text}, {"Data do Pedido", type date}, {"Código Nota Fiscal", type text}, {"Código Postal", Int64.Type}, {"Nome do Produto", type text}, {"Região", type text}, {"Segmento", type text}, {"Data de Envio", type date}, {"Tipo de Envio", type text}, {"Status do Envio", type text}, {"Estado", type text}, {"Subcategoria", type text}, {"Desconto %", type number}, {"Lucro", Int64.Type}, {"Quantidade", Int64.Type}, {"Valor da venda", Int64.Type}})
+				in
+				  #"Tipo de coluna alterado"
+
+	annotation PBI_ResultType = Table
+

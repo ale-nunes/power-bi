@@ -1,0 +1,30 @@
+/// Tabela de datas para inteligência de tempo, relacionada a Data do Pedido.
+table Calendário
+	lineageTag: 6e411ccf-bf11-4cb3-a546-44e729dae10b
+	dataCategory: Time
+
+	column Date
+		isUnique
+		isNameInferred
+		sourceColumn: [Date]
+
+	column Ano
+		isNameInferred
+		sourceColumn: [Ano]
+
+	column MêsNº
+		isNameInferred
+		sourceColumn: [MêsNº]
+
+	column Mês
+		isNameInferred
+		sourceColumn: [Mês]
+
+	column Trimestre
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+	partition Calendário = calculated
+		mode: import
+		source = ADDCOLUMNS(CALENDAR(DATE(2014,1,1), DATE(2017,12,31)), "Ano", YEAR([Date]), "MêsNº", MONTH([Date]), "Mês", FORMAT([Date], "MMM"), "Trimestre", "T" & QUARTER([Date]))
+
