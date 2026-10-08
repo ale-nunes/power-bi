@@ -1,0 +1,88 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "062ef4a218ee64a7ce5a",
+  "position": {
+    "x": 1160.5438813349815,
+    "y": 344.12855377008657,
+    "z": 5,
+    "height": 693.00370828182952,
+    "width": 740.46971569839309,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": []
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "BaseVendas"
+                        }
+                      },
+                      "Property": "Lucro"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(BaseVendas.Lucro)",
+              "nativeQueryRef": "Soma de Lucro"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "BaseVendas"
+                        }
+                      },
+                      "Property": "Status do Envio"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "CountNonNull(BaseVendas.Status do Envio)",
+              "nativeQueryRef": "Contagem de Status do Envio"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "BaseVendas"
+                      }
+                    },
+                    "Property": "Lucro"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
